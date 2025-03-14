@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function App() {
+  const [tasks, setTasks] = useState([]);
   const [openSection, setOpenSection] = useState({
     taskList: false,
     tasks: true,
@@ -14,6 +15,12 @@ function App() {
     }));
   }
 
+  function addTask(task) {
+    setTasks([...tasks, { ...task, completed: false, id: Date.now() }]);
+  }
+
+  console.log(tasks);
+
   return (
     <div className="app">
       {/* Task List with Priority */}
@@ -25,7 +32,7 @@ function App() {
         >
           +
         </button>
-        {openSection.taskList && <TaskForm />}
+        {openSection.taskList && <TaskForm addTask={addTask} />}
       </div>
       {/* Tasks */}
       <div className="task-container">
@@ -58,16 +65,53 @@ function App() {
   );
 }
 
-function TaskForm() {
+function TaskForm({ addTask }) {
+  const [title, setTitle] = useState("");
+  const [priority, setPriority] = useState("Low");
+  const [deadline, setDeadline] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (title.trim() && deadline) {
+      addTask({ title, priority, deadline });
+      setTitle("");
+      setPriority("Low");
+      setDeadline("");
+    }
+  }
+
   return (
-    <form action="" className="task-form">
-      <input type="text" value={""} placeholder="Task title" required />
-      <select name="" id="" value={""}>
+    <form action="" className="task-form" onSubmit={handleSubmit}>
+      {/* Поле ввода для заголовка задачи */}
+      <input
+        type="text"
+        value={title}
+        placeholder="Task title"
+        required
+        onChange={(e) => setTitle(e.target.value)}
+      />
+
+      {/* Выпадающий список для выбора приоритета */}
+      <select
+        name=""
+        id=""
+        value={priority}
+        onChange={(e) => setPriority(e.target.value)}
+      >
         <option value="Low">Low</option>
         <option value="Medium">Medium</option>
         <option value="High">High</option>
       </select>
-      <input type="datetime-local" value={""} required />
+
+      {/* Поле ввода для срока выполнения */}
+      <input
+        type="datetime-local"
+        value={deadline}
+        required
+        onChange={(e) => setDeadline(e.target.value)}
+      />
+
+      {/* Кнопка для отправки формы */}
       <button type="submit">Add Task</button>
     </form>
   );
